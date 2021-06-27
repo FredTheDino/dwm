@@ -1282,18 +1282,10 @@ resizeclient(Client *c, int x, int y, int w, int h)
 {
 	XWindowChanges wc;
 
-    if (c->isfloating || c->isfullscreen) {
-        c->oldw = c->w; c->w = wc.width = w;
-        c->oldh = c->h; c->h = wc.height = h;
-        c->oldx = c->x; c->x = wc.x = x;
-        c->oldy = c->y; c->y = wc.y = y;
-    } else {
-        c->oldw = c->w; c->w = wc.width = w - 2 * half_gap;
-        c->oldh = c->h; c->h = wc.height = h - 2 * half_gap;
-        c->oldx = c->x; c->x = wc.x = x + half_gap;
-        c->oldy = c->y; c->y = wc.y = y + half_gap;
-    }
-
+	c->oldx = c->x; c->x = wc.x = x;
+	c->oldy = c->y; c->y = wc.y = y;
+	c->oldw = c->w; c->w = wc.width = w;
+	c->oldh = c->h; c->h = wc.height = h;
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
