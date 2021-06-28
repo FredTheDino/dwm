@@ -124,6 +124,7 @@ struct Monitor {
 	unsigned int tagset[2];
 	int showbar;
 	int topbar;
+    int segbar;
 	Client *clients;
 	Client *sel;
 	Client *stack;
@@ -214,6 +215,7 @@ static void tagmon(const Arg *arg);
 static void tile(Monitor *);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
+static void togglestatus(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
@@ -240,6 +242,7 @@ static void zoom(const Arg *arg);
 /* variables */
 static const char broken[] = "broken";
 static char stext[256];
+static char *ssegs[2];
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh, blw = 0;      /* bar geometry */
@@ -443,7 +446,7 @@ buttonpress(XEvent *e)
 			arg.ui = 1 << i;
 		} else if (ev->x < x + blw)
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - (int)TEXTW(stext))
+		else if (ev->x > selmon->ww - (int)TEXTW(ssegs[selmon->segbar]))
 			click = ClkStatusText;
 		else
 			click = ClkWinTitle;
@@ -704,11 +707,12 @@ drawbar(Monitor *m)
 	int boxw = drw->fonts->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
 	Client *c;
+    const char *text = ssegs[m->segbar];
 
 	/* draw status first so it can be overdrawn by tags later */
     drw_setscheme(drw, scheme[SchemeNorm]);
-    tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
-    drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
+    tw = TEXTW(text) - lrpad + 2; /* 2px right padding */
+    drw_text(drw, m->ww - tw, 0, tw, bh, 0, text, 0);
 
 	for (c = m->clients; c; c = c->next) {
 		occ |= c->tags;
@@ -1752,6 +1756,14 @@ togglefloating(const Arg *arg)
 }
 
 void
+togglestatus(const Arg *arg)
+{
+	selmon->segbar++;
+	selmon->segbar %= LENGTH(ssegs);
+}
+
+
+void
 toggletag(const Arg *arg)
 {
 	unsigned int newtags;
@@ -2019,8 +2031,20 @@ updatesizehints(Client *c)
 void
 updatestatus(void)
 {
-	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
+	if (gettextprop(root, XA_WM_NAME, stext, sizeof(stext))) {
+        ssegs[0] = stext;
+        ssegs[1] = stext;
+        for (int i = 0; i < LENGTH(stext) && stext[i]; i++) {
+            char c = stext[i];
+            if (c == '%') {
+                stext[i] = '\0';
+                ssegs[1] = stext + i + 1;
+            }
+        }
+
+    } else {
 		strcpy(stext, "dwm-"VERSION);
+    }
     for (Monitor *m = mons; m; m = m->next)
         drawbar(m);
 }
