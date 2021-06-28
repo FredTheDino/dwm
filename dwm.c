@@ -711,7 +711,7 @@ drawbar(Monitor *m)
 
 	/* draw status first so it can be overdrawn by tags later */
     drw_setscheme(drw, scheme[SchemeNorm]);
-    tw = TEXTW(text) - lrpad + 2; /* 2px right padding */
+    tw = TEXTW(text) - lrpad + 4; /* 4px right padding */
     drw_text(drw, m->ww - tw, 0, tw, bh, 0, text, 0);
 
 	for (c = m->clients; c; c = c->next) {
