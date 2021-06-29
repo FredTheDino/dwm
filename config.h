@@ -62,6 +62,15 @@ static const char *roficmd[] = {
 static const char *termcmd[]  = { "alacritty", NULL };
 static const char *suspend[] = { "systemctl", "suspend" };
 
+static const char *upvol[]     = { "/usr/bin/pamixer", "-i", "5", NULL };
+static const char *downvol[]   = { "/usr/bin/pamixer", "-d", "5", NULL };
+static const char *mutevol[]   = { "/usr/bin/pamixer", "-t", "toggle", NULL };
+
+static const char *playpause[] = { "/usr/bin/playerctl", "play-pause", NULL };
+static const char *next[]      = { "/usr/bin/playerctl", "next", NULL };
+static const char *prev[]      = { "/usr/bin/playerctl", "previous", NULL };
+
+
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = roficmd } },
@@ -97,6 +106,19 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{ MODKEY|ShiftMask,             XK_r,      quit,           {1} },
 
+    { 0,         XF86XK_AudioLowerVolume,      spawn,          {.v = downvol } },
+    { MODKEY,    XF86XK_AudioLowerVolume,      spawn,          {.v = downvol } },
+	{ 0,         XF86XK_AudioMute,             spawn,          {.v = mutevol } },
+	{ MODKEY,    XF86XK_AudioMute,             spawn,          {.v = mutevol } },
+	{ 0,         XF86XK_AudioRaiseVolume,      spawn,          {.v = upvol   } },
+	{ MODKEY,    XF86XK_AudioRaiseVolume,      spawn,          {.v = upvol   } },
+
+	{ 0,         XF86XK_AudioNext,             spawn,          {.v = next   } },
+	{ MODKEY,    XF86XK_AudioNext,             spawn,          {.v = next   } },
+	{ 0,         XF86XK_AudioPrev,             spawn,          {.v = prev   } },
+	{ MODKEY,    XF86XK_AudioPrev,             spawn,          {.v = prev   } },
+	{ 0,         XF86XK_AudioPlay,             spawn,          {.v = playpause   } },
+	{ MODKEY,    XF86XK_AudioPlay,             spawn,          {.v = playpause   } },
 };
 
 /* button definitions */
